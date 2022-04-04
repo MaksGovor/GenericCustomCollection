@@ -5,7 +5,9 @@ using System.Collections.Generic;
 namespace CustomSortedList
 {
     public class MySortedList<TKey, TValue> :
-        IEnumerable<KeyValuePair<TKey, TValue>>
+        IEnumerable<KeyValuePair<TKey, TValue>>,
+        IReadOnlyCollection<KeyValuePair<TKey, TValue>>,
+        IEnumerable
         where TKey : IComparable<TKey>
     {
         private const double REDUCTION_CAPACITY_LIMIT = 0.9;
