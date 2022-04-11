@@ -17,7 +17,9 @@ namespace CustomSortedList
         private KeysList keysList;
         private ValuesList valuesList;
         private int capacity = 4;
-        private IComparer valueComparer = Comparer<TValue>.Default;
+        private IComparer valueComparer = typeof(IComparable<TValue>).IsAssignableFrom(typeof(TValue)) 
+            ? Comparer<TValue>.Default
+            : null;
 
         public IComparer<TKey> Comparer { get; } = Comparer<TKey>.Default;
         public int Count { get; private set; } = 0;
@@ -186,7 +188,6 @@ namespace CustomSortedList
         public void Add(TKey key, TValue value)
         {
             if (ContainsKey(key)) throw new ArgumentException($"Key {key} already exists");
-            if (key == null) throw new ArgumentNullException("Key should be not null");
 
             Node node = new Node(key, value);
             if (head == null)
@@ -239,7 +240,7 @@ namespace CustomSortedList
             while (cursor != null)
             {
                 if (valueComparer != null && valueComparer.Compare(cursor.value, value) == 0) return true;
-                else if (cursor.value.Equals(value)) return true;
+                else if ((cursor.value == null && value == null) || cursor.value.Equals(value)) return true;
                 cursor = cursor.next;
             }
 
@@ -286,7 +287,7 @@ namespace CustomSortedList
             while (cursor != null)
             {
                 if (valueComparer != null && valueComparer.Compare(cursor.value, value) == 0) return index;
-                else if (cursor.value.Equals(value)) return index;
+                else if ((cursor.value == null && value == null) || cursor.value.Equals(value)) return index;
                 cursor = cursor.next;
                 index++;
             }
