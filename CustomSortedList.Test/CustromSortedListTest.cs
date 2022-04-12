@@ -20,7 +20,7 @@ namespace CustomSortedList.Test
         {
             public int Compare(int value1, int value2)
             {
-                return -(value1.CompareTo(value1));
+                return -(value1.CompareTo(value2));
             }
         }
 
@@ -178,6 +178,72 @@ namespace CustomSortedList.Test
             //assert
             Assert.NotNull(numbers);
             Assert.Equal(expectedCapacity, numbers.Capacity);
+        }
+
+        [Fact]
+        public void InitByComparer_ValidComparer_CheckCorrectSequencing()
+        {
+            //arrange
+            IComparer<int> reverseComparer = new ReverseIntComparer();
+            int[] keysReverseSort = new int[] { 4, 3, 2, 1 };
+            string[] valuesReverseSort = new string[] { "four", "three", "two", "one" };
+
+            //act
+            MySortedList<int, string> numbers = new MySortedList<int, string>(reverseComparer);
+            numbers.Add(2, "two");
+            numbers.Add(4, "four");
+            numbers.Add(1, "one");
+            numbers.Add(3, "three");
+
+            //assert
+            Assert.Equal(reverseComparer, numbers.Comparer);
+            for (int i = 0; i < numbers.Count; i++)
+            {
+                Assert.Equal(numbers.GetKey(i), keysReverseSort[i]);
+                Assert.Equal(numbers.GetByIndex(i), valuesReverseSort[i]);
+            }
+        }
+
+        [Fact]
+        public void InitByComparerAndCapacity_ValidComparer_CheckCorrectSetting()
+        {
+            //arrange
+            IComparer<int> reverseComparer = new ReverseIntComparer();
+            const int expectedCapacity = 64;
+
+            //act
+            MySortedList<int, string> numbers = new MySortedList<int, string>(reverseComparer, expectedCapacity);
+
+            //assert
+            Assert.Equal(reverseComparer, numbers.Comparer);
+            Assert.Equal(expectedCapacity, numbers.Capacity);
+        }
+
+        [Fact]
+        public void InitByComparerAndDictionary_ValidComparerNotNullKeys_CheckCorrectSequencing()
+        {
+            //arrange
+            IComparer<int> reverseComparer = new ReverseIntComparer();
+            Dictionary<int, string> numbersDict = new Dictionary<int, string>()
+            {
+                { 2, "two" },
+                { 4, "four" },
+                { 1, "one" },
+                { 3, "three" },
+            };
+            int[] keysReverseSort = new int[] { 4, 3, 2, 1 };
+            string[] valuesReverseSort = new string[] { "four", "three", "two", "one" };
+
+            //act
+            MySortedList<int, string> numbers = new MySortedList<int, string>(reverseComparer, numbersDict);
+
+            //assert
+            Assert.Equal(reverseComparer, numbers.Comparer);
+            for (int i = 0; i < numbers.Count; i++)
+            {
+                Assert.Equal(numbers.GetKey(i), keysReverseSort[i]);
+                Assert.Equal(numbers.GetByIndex(i), valuesReverseSort[i]);
+            }
         }
 
         [Fact]
