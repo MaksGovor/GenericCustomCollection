@@ -373,7 +373,7 @@ namespace CustomSortedList
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("Index out of range");
+            if (index < 0 || index > Count - 1) throw new ArgumentOutOfRangeException("Index out of range");
             int iterate = 0;
 
             Node cursor = head;
@@ -430,12 +430,14 @@ namespace CustomSortedList
 
         public void TrimExcess()
         {
-            if (Count / Capacity >= REDUCTION_CAPACITY_LIMIT) return;
+            if ((double)Count / (double)Capacity >= REDUCTION_CAPACITY_LIMIT) return;
             Capacity = Count;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            if (key == null) throw new ArgumentNullException("Key should be not null");
+
             if (ContainsKey(key))
             {
                 value = this[key];
@@ -454,17 +456,17 @@ namespace CustomSortedList
                 return "MySortedList Empty";
             }
 
-            string list = "";
+            string list = "{";
             Node cursor = head;
 
             while (cursor.next != null)
             {
 
-                list += $"{cursor} -> ";
+                list += $"{cursor}, ";
                 cursor = cursor.next;
             }
 
-            list += $"{cursor}";
+            list += $"{cursor}" + "}";
 
             return list;
         }
@@ -487,7 +489,7 @@ namespace CustomSortedList
                 next = node;
             }
 
-            public override string ToString() => $"({key}, {value})";
+            public override string ToString() => $"{key}: {value}";
         }
 
         private sealed class KeysList : IList<TKey>

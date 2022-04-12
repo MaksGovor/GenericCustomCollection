@@ -656,7 +656,6 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedCountAfterRemove, numbers.Count);
         }
 
-
         [Fact]
         public void Remove_NonNullNotExistingKey_ReturnsFalse()
         {
@@ -699,6 +698,244 @@ namespace CustomSortedList.Test
             //assert
             Assert.NotNull(exception);
             Assert.Equal(expectedExceptionMessage, exception.ParamName);
+        }
+
+        [Fact]
+        public void RemoveAt_ValidIndex_RemoveItems()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>()
+            {
+                { 1, "one" },
+                { 2, "two" },
+                { 7, "seven" },
+            };
+            const int expectedCountAfterRemove = 2;
+
+            //act
+            numbers.RemoveAt(0); // {1, "one"}
+            bool containsOne = numbers.ContainsKey(1);
+
+            //assert
+            Assert.Equal(expectedCountAfterRemove, numbers.Count);
+            Assert.False(containsOne);
+        }
+
+        [Fact]
+        public void RemoveAt_NoValidIndex_RemoveItems()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>()
+            {
+                { 1, "one" },
+                { 2, "two" },
+                { 7, "seven" },
+            };
+            const int expectedCountAfterRemove = 3;
+            const string expectedExceptionMessage = "Index out of range";
+
+            //act
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.RemoveAt(-1));
+            ArgumentOutOfRangeException exception2 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.RemoveAt(3));
+
+            //assert
+            Assert.Equal(expectedCountAfterRemove, numbers.Count);
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
+
+        [Fact]
+        public void IsEmpty_EmptyAndNonEmptySL_ReturnsBool()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>();
+
+            //act
+            bool isEmptyBeforeAdd = numbers.IsEmpty();
+            numbers.Add(1, "one");
+            bool isEmptyAfterAdd = numbers.IsEmpty();
+            numbers.Remove(1);
+            bool isEmptyAfterRemoveLast = numbers.IsEmpty();
+            numbers.Add(1, "one");
+            numbers.Add(2, "two");
+            numbers.Clear();
+            bool isEmptyAfterClear = numbers.IsEmpty();
+
+
+            //assert
+            Assert.True(isEmptyBeforeAdd);
+            Assert.False(isEmptyAfterAdd);
+            Assert.True(isEmptyAfterRemoveLast);
+            Assert.True(isEmptyAfterClear);
+        }
+
+        [Fact]
+        public void Clone_MySortedList_ReturnsEqualList()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>()
+            {
+                { 1, "one" },
+                { 2, "two" },
+                { 7, "seven" },
+            };
+            int numbersHash = numbers.GetHashCode();
+
+            //act
+            MySortedList<int, string> numbersClone = numbers.Clone();
+            int numbersCloneHash = numbersClone.GetHashCode();
+
+            //assert
+            Assert.Equal(numbers, numbersClone);
+            Assert.NotEqual(numbersHash, numbersCloneHash);
+        }
+
+        [Fact]
+        public void TrimExcess_CountDivideCapacityLessThan90Percent()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>()
+            {
+                { 1, "one" },
+                { 2, "two" },
+                { 7, "seven" },
+                { 5, "five" },
+                { 4, "four" },
+            };
+            const int expectedCapacityBeforeTrim = 8;
+            const int expectedCapacityAfterTrim = 5;
+
+            //act
+            int capacityBeforeTrim = numbers.Capacity;
+            numbers.TrimExcess();
+            int capacityAfterTrim = numbers.Capacity;
+
+            //assert
+            Assert.Equal(expectedCapacityBeforeTrim, capacityBeforeTrim);
+            Assert.Equal(expectedCapacityAfterTrim, capacityAfterTrim);
+        }
+
+        [Fact]
+        public void TrimExcess_CountDivideCapacityGreterThan90Percent()
+        {
+            //arrange
+            MySortedList<int, string> numbers = new MySortedList<int, string>()
+            {
+                { 1, "one" },
+                { 2, "two" },
+                { 7, "seven" },
+                { 5, "five" },
+                { 4, "four" },
+                { 6, "six" },
+                { 9, "nine" },
+                { 11, "eleven" },
+                { 12, "twelve" },
+                { 13, "thirdteen" },
+                { 100, "100" },
+                { 101, "101" },
+                { 102, "102" },
+                { 103, "103" },
+                { 104, "104" },
+            };
+            const int expectedCapacityBeforeTrim = 16;
+            const int expectedCapacityAfterTrim = 16;
+
+            //act
+            int capacityBeforeTrim = numbers.Capacity;
+            numbers.TrimExcess();
+            int capacityAfterTrim = numbers.Capacity;
+
+            //assert
+            Assert.Equal(expectedCapacityBeforeTrim, capacityBeforeTrim);
+            Assert.Equal(expectedCapacityAfterTrim, capacityAfterTrim);
+        }
+
+        [Fact]
+        public void TryGetValue_NonNullExistingKey_ReturnsTrue()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+
+            //act
+            int value;
+            bool result = numbers.TryGetValue("four", out value);
+
+            //assert
+            Assert.True(result);
+            Assert.Equal(4, value);
+        }
+
+        [Fact]
+        public void TryGetValue_NonNullNoExistingKey_ReturnsFalse()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+
+            //act
+            int value;
+            bool result = numbers.TryGetValue("ten", out value);
+
+            //assert
+            Assert.False(result);
+            Assert.Equal(0, value);
+        }
+
+        [Fact]
+        public void TryGetValue_NullKey_ArgumentNullException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+            const string expectedExceptionMessage = "Key should be not null";
+
+            //act
+            int value;
+            ArgumentNullException exception = Assert.Throws<ArgumentNullException>(() => numbers.TryGetValue(null, out value));
+
+            //assert
+            Assert.NotNull(exception);
+            Assert.Equal(expectedExceptionMessage, exception.ParamName);
+        }
+
+        [Fact]
+        public void ToString_TestValidString()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedString = "{one: 1, three: 3, two: 2}";
+
+            //act
+            string actualString = numbers.ToString();
+
+            //assert
+            Assert.Equal(expectedString, actualString);
         }
     }
 }
