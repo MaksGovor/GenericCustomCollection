@@ -297,11 +297,11 @@ namespace CustomSortedList
 
         public TKey GetKey(int index)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("Index out of range");
+            if (index < 0 || index > Count - 1) throw new ArgumentOutOfRangeException("Index out of range");
 
             Node cursor = head;
             int iterate = 0;
-
+            
             while (cursor != null && iterate <= index)
             {
                 if (iterate == index) return cursor.key;
@@ -314,11 +314,11 @@ namespace CustomSortedList
 
         public TValue GetByIndex(int index)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("Index out of range");
+            if (index < 0 || index > Count - 1) throw new ArgumentOutOfRangeException("Index out of range");
 
             Node cursor = head;
             int iterate = 0;
-
+            
             while (cursor != null && iterate <= index)
             {
                 if (iterate == index) return cursor.value;
@@ -331,7 +331,7 @@ namespace CustomSortedList
 
         public void SetByIndex(int index, TValue value)
         {
-            if (index < 0 || index > Count) throw new ArgumentOutOfRangeException("Index out of range");
+            if (index < 0 || index > Count - 1) throw new ArgumentOutOfRangeException("Index out of range");
 
             Node cursor = head;
             int iterate = 0;
@@ -356,7 +356,6 @@ namespace CustomSortedList
                 if (Comparer.Compare(cursor.key, key) == 0)
                 {
                     removeNode(prev, cursor);
-                    Count--;
                     OnRemoval(
                         new MySortedListEventArgs<TKey, TValue>(
                             $"Removed: {cursor.key} -> {cursor.value}",

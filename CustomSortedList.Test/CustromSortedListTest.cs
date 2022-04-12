@@ -495,7 +495,210 @@ namespace CustomSortedList.Test
             Assert.Equal(-1, indexOfValueNull);
         }
 
+        [Fact]
+        public void GetKey_ValidIndex_ReturnsKey()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+
+            //act
+            string key0 = numbers.GetKey(0);
+            string key1 = numbers.GetKey(1);
+            string key2 = numbers.GetKey(2);
+
+            //assert
+            Assert.Equal("one", key0);
+            Assert.Equal("three", key1);
+            Assert.Equal("two", key2);
+        }
+
+        [Fact]
+        public void GetKey_NoValidIndex_ThrowsArgumentOutOfRangeException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Index out of range";
+
+            //act
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.GetKey(-1));
+            ArgumentOutOfRangeException exception2 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.GetKey(3));
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
 
 
+        [Fact]
+        public void GetByIndex_ValidIndex_ReturnsValue()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+
+            //act
+            int value0 = numbers.GetByIndex(0);
+            int value1 = numbers.GetByIndex(1);
+            int value2 = numbers.GetByIndex(2);
+
+            //assert
+            Assert.Equal(1, value0);
+            Assert.Equal(3, value1);
+            Assert.Equal(2, value2);
+        }
+
+        [Fact]
+        public void GetByIndex_NoValidIndex_ThrowsArgumentOutOfRangeException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Index out of range";
+
+            //act
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.GetByIndex(-1));
+            ArgumentOutOfRangeException exception2 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.GetByIndex(3));
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
+
+        [Fact]
+        public void SetByIndex_ValidIndex_SetCorrectValueByIndex()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const int newValueForIndex0 = 11;
+            const int newValueForIndex1 = 22;
+
+            //act
+            numbers.SetByIndex(0, newValueForIndex0);
+            numbers.SetByIndex(1, newValueForIndex1);
+            int value0 = numbers.GetByIndex(0);
+            int value1 = numbers.GetByIndex(1);
+
+            //assert
+            Assert.Equal(newValueForIndex0, value0);
+            Assert.Equal(newValueForIndex1, value1);
+        }
+
+        [Fact]
+        public void SetByIndex_NoValidIndex_ThrowsArgumentOutOfRangeException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Index out of range";
+
+            //act
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.SetByIndex(-1, 212));
+            ArgumentOutOfRangeException exception2 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.SetByIndex(3, 212));
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
+
+        [Fact]
+        public void Remove_NonNullExistingKey_ReturnsTrue()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+            const int expectedCountAfterRemove = 3;
+
+            //act
+            bool removedOne = numbers.Remove("two");
+            bool removedFive = numbers.Remove("five");
+
+            //assert
+            Assert.True(removedOne && removedFive);
+            Assert.Equal(expectedCountAfterRemove, numbers.Count);
+        }
+
+
+        [Fact]
+        public void Remove_NonNullNotExistingKey_ReturnsFalse()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+            const int expectedCountAfterRemove = 4;
+
+            //act
+            numbers.Remove("two");
+            bool removedOne = numbers.Remove("two");
+            bool removedFive = numbers.Remove("six");
+
+            //assert
+            Assert.False(removedOne || removedFive);
+            Assert.Equal(expectedCountAfterRemove, numbers.Count);
+        }
+
+        [Fact]
+        public void Remove_NullKey_ThrowsArgumentNullException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Key should be not null";
+
+            //act
+            ArgumentNullException exception = Assert.Throws<ArgumentNullException>(() => numbers.Remove(null));
+
+            //assert
+            Assert.NotNull(exception);
+            Assert.Equal(expectedExceptionMessage, exception.ParamName);
+        }
     }
 }
