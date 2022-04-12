@@ -277,7 +277,7 @@ namespace CustomSortedList.Test
 
             //act
             int capacityBeforeSet = numbers.Capacity;
-            numbers.Capacity = expectedCapacityBeforeSet;
+            numbers.Capacity = expectedCapacityAfterSet;
             int capacityAfterSet = numbers.Capacity;
 
             //assert
@@ -622,15 +622,17 @@ namespace CustomSortedList.Test
                 { "two", 2 },
                 { "three", 3 },
             };
+            const string key = "one";
+            string expectedExceptionMessage = $"Key {key} does not exists";
 
             //act
             numbers.Clear();
-            NullReferenceException exception = Assert.Throws<NullReferenceException>(() => numbers["one"]);
+            KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(() => numbers["one"]);
 
             //assert
             Assert.NotNull(exception);
             Assert.Empty(numbers);
-            Assert.Equal("MySortedList is empty", exception.Message);
+            Assert.Equal(expectedExceptionMessage, exception.Message);
         }
 
         [Fact]

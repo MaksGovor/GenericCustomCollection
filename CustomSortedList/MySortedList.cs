@@ -243,13 +243,13 @@ namespace CustomSortedList
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            Node cursor = head;
+            /*Node cursor = head;
             while (cursor != null)
             {
                 yield return new KeyValuePair<TKey, TValue>(cursor.key, cursor.value);
                 cursor = cursor.next;
-            }
-            //return new Enumerator(this);
+            }*/
+            return new Enumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
