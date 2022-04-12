@@ -435,6 +435,18 @@ namespace CustomSortedList
             Capacity = Count;
         }
 
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            if (ContainsKey(key))
+            {
+                value = this[key];
+                return true;
+            }
+
+            value = default(TValue);
+            return false;
+        }
+
         public override string ToString()
         {
 
