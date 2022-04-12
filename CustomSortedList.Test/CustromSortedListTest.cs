@@ -16,6 +16,14 @@ namespace CustomSortedList.Test
             }
         }
 
+        public class ReverseIntComparer : IComparer<int>
+        {
+            public int Compare(int value1, int value2)
+            {
+                return -(value1.CompareTo(value1));
+            }
+        }
+
         [Fact]
         public void AddingItems_NotNullKeys_CheckKeyValueMatching()
         {
@@ -110,6 +118,28 @@ namespace CustomSortedList.Test
         }
 
         [Fact]
+        public void Init_NotNullKeys_CheckRightSeq()
+        {
+            //arrange
+            const int expectedCount = 3;
+
+            //act
+            MySortedList<int, int> numbers = new MySortedList<int, int>()
+            {
+                { 12, 1 },
+                { 3, 2 },
+                { 14, 3 },
+            };
+
+            bool rightSeq = numbers.IndexOfKey(3) < numbers.IndexOfKey(12) && numbers.IndexOfKey(12) < numbers.IndexOfKey(14);
+            
+            //assert
+            Assert.NotNull(numbers);
+            Assert.True(rightSeq);
+            Assert.Equal(expectedCount, numbers.Count);
+        }
+
+        [Fact]
         public void InitByDict_NotNullKeys_CheckCount()
         {
             //arrange
@@ -164,6 +194,357 @@ namespace CustomSortedList.Test
             Assert.Equal(numbers.Capacity, expectedCapacity);
         }
 
+        [Fact]
+        public void SetCapacity_ValidValue()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+            const int expectedCapacityBeforeSet = 8;
+            const int expectedCapacityAfterSet = 64;
+
+            //act
+            int capacityBeforeSet = numbers.Capacity;
+            numbers.Capacity = expectedCapacityBeforeSet;
+            int capacityAfterSet = numbers.Capacity;
+
+            //assert
+            Assert.Equal(expectedCapacityBeforeSet, capacityBeforeSet);
+            Assert.Equal(expectedCapacityAfterSet, capacityAfterSet);
+        }
+
+        [Fact]
+        public void SetCapacity_NoValidValue_ThrowsArgumentOutOfRangeException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "four", 4 },
+                { "five", 5 },
+            };
+            const int expectedCapacityBeforeSet = 8;
+            const string expectedExceptionMessage = "Capacity must be greater than Count";
+
+            //act
+            int capacityBeforeSet = numbers.Capacity;
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => numbers.Capacity = 4);
+            int capacityAfterSet = numbers.Capacity;
+
+            //assert
+            Assert.Equal(expectedCapacityBeforeSet, capacityBeforeSet);
+            Assert.Equal(expectedCapacityBeforeSet, capacityAfterSet);
+            Assert.NotNull(exception1);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+        }
+
+        [Fact]
+        public void GetAndSetValueByKey_NullKey_ThrowsArgumentNullException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>();
+            const string expectedExceptionMessage = "Key should be not null";
+
+            //act
+            ArgumentNullException exception1 = Assert.Throws<ArgumentNullException>(() => numbers[null]);
+            ArgumentNullException exception2 = Assert.Throws<ArgumentNullException>(() => numbers[null] = 5);
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
+
+        [Fact]
+        public void GetValueByKey_NotNullNoExistingKey_ThrowsKeyNotFoundException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>();
+            const string key = "ten";
+            string expectedExceptionMessage = $"Key {key} does not exists";
+
+            //act
+            KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(() => numbers[key]);
+
+            //assert
+            Assert.NotNull(exception);
+            Assert.Equal(expectedExceptionMessage, exception.Message);
+        }
+
+        [Fact]
+        public void SetValueByKey_NotNullNoExistingKey_AddNewItem()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>();
+            const string key = "ten";
+
+            //act
+            numbers[key] = 10;
+
+            //assert
+            Assert.Single(numbers);
+            Assert.Equal(10, numbers[key]);
+        }
+
+        [Fact]
+        public void GetAndSetValueByKey_NotNullExistingKey_ThrowsArgumentNullException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>() 
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "five", 4}
+            };
+            const int expectedOldValue = 4;
+            const int expectedNewValue = 5;
+
+            //act
+            int oldValue = numbers["five"];
+            numbers["five"] = expectedNewValue;
+            int newValue = numbers["five"];
+
+            //assert
+            Assert.Equal(expectedOldValue, oldValue);
+            Assert.Equal(expectedNewValue, newValue);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_NoSupportedOperations_ThrowsNotSupportedException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "five", 4}
+            };
+            const string expectedExceptionMessage = "This operation is not supported";
+
+            //act
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+            NotSupportedException exceptionKeys1 = Assert.Throws<NotSupportedException>(() => keys.Add(""));
+            NotSupportedException exceptionKeys2 = Assert.Throws<NotSupportedException>(() => keys.Clear());
+            NotSupportedException exceptionKeys3 = Assert.Throws<NotSupportedException>(() => keys.Insert(1, ""));
+            NotSupportedException exceptionKeys4 = Assert.Throws<NotSupportedException>(() => keys[1] = "");
+            NotSupportedException exceptionKeys5 = Assert.Throws<NotSupportedException>(() => keys.Remove(""));
+            NotSupportedException exceptionKeys6 = Assert.Throws<NotSupportedException>(() => keys.RemoveAt(1));
+
+            NotSupportedException exceptionValues1 = Assert.Throws<NotSupportedException>(() => values.Add(1));
+            NotSupportedException exceptionValues2 = Assert.Throws<NotSupportedException>(() => values.Clear());
+            NotSupportedException exceptionValues3 = Assert.Throws<NotSupportedException>(() => values.Insert(1, 1));
+            NotSupportedException exceptionValues4 = Assert.Throws<NotSupportedException>(() => values[1] = 1);
+            NotSupportedException exceptionValues5 = Assert.Throws<NotSupportedException>(() => values.Remove(1));
+            NotSupportedException exceptionValues6 = Assert.Throws<NotSupportedException>(() => values.RemoveAt(1));
+
+            //assert
+            Assert.Equal(expectedExceptionMessage, exceptionKeys1.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionKeys2.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionKeys3.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionKeys4.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionKeys5.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionKeys6.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues1.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues2.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues3.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues4.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues5.Message);
+            Assert.Equal(expectedExceptionMessage, exceptionValues6.Message);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_IsReadOnly_ReturnsFalse()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "five", 4}
+            };
+
+            //act
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            //assert
+            Assert.True(keys.IsReadOnly);
+            Assert.True(values.IsReadOnly);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_Count_EqualToCountOfSortedList()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+                { "five", 4}
+            };
+
+            //act
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            //assert
+            Assert.Equal(numbers.Count, keys.Count);
+            Assert.Equal(numbers.Count, values.Count);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_GetKeyAndValueByIndex_EqualToSortedListPair()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+
+            //act
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            //assert
+            foreach (KeyValuePair<string, int> kvp in numbers)
+            {
+                Assert.Equal(keys[numbers.IndexOfKey(kvp.Key)], kvp.Key);
+                Assert.Equal(values[numbers.IndexOfValue(kvp.Value)], kvp.Value);
+            }
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_TestEnumerator()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            int keysAcc = 0;
+            int valuesAcc = 0;
+
+            //act
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            //assert
+            foreach (string key in keys)
+            {
+                Assert.Equal(key, keys[keysAcc]);
+                keysAcc++;
+            }
+
+            foreach (int value in values)
+            {
+                Assert.Equal(value, values[valuesAcc]);
+                valuesAcc++;
+            }
+
+            Assert.Equal(numbers.Count, keysAcc);
+            Assert.Equal(numbers.Count, valuesAcc);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_CopyTo_ValidArraySize()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            string[] keysArr = new string[3];
+            int[] valuesArr = new int[3];
+
+            //act
+            keys.CopyTo(keysArr, 0);
+            values.CopyTo(valuesArr, 0);
+
+            //assert
+            Assert.Equal(keys, keysArr);
+            Assert.Equal(values, valuesArr);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_CopyTo_NonValidStartIndex_ThrowsArgumentOutOfRangeException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Number was less than the array's lower bound in the first dimension";
+
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            string[] keysArr = new string[3];
+            int[] valuesArr = new int[3];
+
+            //act
+            ArgumentOutOfRangeException exception1 = Assert.Throws<ArgumentOutOfRangeException>(() => keys.CopyTo(keysArr, -1));
+            ArgumentOutOfRangeException exception2 = Assert.Throws<ArgumentOutOfRangeException>(() => values.CopyTo(valuesArr, -1));
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.ParamName);
+            Assert.Equal(expectedExceptionMessage, exception2.ParamName);
+        }
+
+        [Fact]
+        public void GetKeysAndValueList_CopyTo_SmallArraySizeFromIndex_ThrowsArgumentException()
+        {
+            //arrange
+            MySortedList<string, int> numbers = new MySortedList<string, int>()
+            {
+                { "one", 1 },
+                { "two", 2 },
+                { "three", 3 },
+            };
+            const string expectedExceptionMessage = "Destination array was not long enough";
+
+            IList<string> keys = numbers.Keys;
+            IList<int> values = numbers.Values;
+
+            string[] keysArr = new string[3];
+            int[] valuesArr = new int[3];
+
+            //act
+            ArgumentException exception1 = Assert.Throws<ArgumentException>(() => keys.CopyTo(keysArr, 1));
+            ArgumentException exception2 = Assert.Throws<ArgumentException>(() => values.CopyTo(valuesArr, 1));
+
+            //assert
+            Assert.NotNull(exception1);
+            Assert.NotNull(exception2);
+            Assert.Equal(expectedExceptionMessage, exception1.Message);
+            Assert.Equal(expectedExceptionMessage, exception2.Message);
+        }
 
         [Fact]
         public void Clear_CheckCount_ThrowsNullReferenceException()
@@ -336,6 +717,7 @@ namespace CustomSortedList.Test
             MySortedList<int, string> numbersActual = new MySortedList<int, string>();
             MySortedList<int, string> numbersActualForEach = new MySortedList<int, string>();
             IEnumerator<KeyValuePair<int, string>> enumerator = numbersExpected.GetEnumerator();
+            
             //act
             while (enumerator.MoveNext())
             {

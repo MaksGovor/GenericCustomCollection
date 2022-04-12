@@ -53,10 +53,7 @@ namespace CustomSortedList
         {
             get
             {
-                if (Count == 0)
-                {
-                    throw new NullReferenceException("MySortedList is empty");
-                }
+                if (key == null) throw new ArgumentNullException("Key should be not null");
                 else
                 {
                     Node cursor = head;
@@ -72,10 +69,7 @@ namespace CustomSortedList
             }
             set
             {
-                if (Count == 0)
-                {
-                    throw new NullReferenceException("MySortedList is empty");
-                }
+                if (key == null) throw new ArgumentNullException("Key should be not null");
                 else
                 {
                     Node cursor = head;
@@ -90,7 +84,7 @@ namespace CustomSortedList
                         cursor = cursor.next;
                     }
 
-                    throw new NullReferenceException($"Key {key} does not exists");
+                    Add(key, value);
                 }
             }
         }
@@ -553,6 +547,7 @@ namespace CustomSortedList
                 while (cursor != null)
                 {
                     array[index] = cursor.key;
+                    cursor = cursor.next;
                     index++;
                 }
             }
@@ -656,6 +651,7 @@ namespace CustomSortedList
                 while (cursor != null)
                 {
                     array[index] = cursor.value;
+                    cursor = cursor.next;
                     index++;
                 }
             }
