@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using CustomSortedList;
 using Xunit;
@@ -23,6 +22,8 @@ namespace CustomSortedList.Test
                 return -(value1.CompareTo(value2));
             }
         }
+
+        #region Add Items (Add method)
 
         [Fact]
         public void AddingItems_NotNullKeys_CheckKeyValueMatching()
@@ -116,6 +117,10 @@ namespace CustomSortedList.Test
             Assert.NotNull(exception);
             Assert.Equal(expectedExceptionMessage, exception.Message);
         }
+
+        #endregion
+
+        #region Init (Test constructors)
 
         [Fact]
         public void Init_NotNullKeys_CheckRightSeq()
@@ -260,6 +265,10 @@ namespace CustomSortedList.Test
             Assert.Equal(numbers.Capacity, expectedCapacity);
         }
 
+        #endregion
+
+        #region Capacity field
+
         [Fact]
         public void SetCapacity_ValidValue()
         {
@@ -311,6 +320,10 @@ namespace CustomSortedList.Test
             Assert.NotNull(exception1);
             Assert.Equal(expectedExceptionMessage, exception1.ParamName);
         }
+
+        #endregion
+
+        #region Get/Set value by key
 
         [Fact]
         public void GetAndSetValueByKey_NullKey_ThrowsArgumentNullException()
@@ -384,6 +397,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedOldValue, oldValue);
             Assert.Equal(expectedNewValue, newValue);
         }
+
+        #endregion
+
+        #region List & Keys fields
 
         [Fact]
         public void GetKeysAndValueList_NoSupportedOperations_ThrowsNotSupportedException()
@@ -612,6 +629,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception2.Message);
         }
 
+        #endregion
+
+        #region Clear method
+
         [Fact]
         public void Clear_CheckCount_ThrowsNullReferenceException()
         {
@@ -634,6 +655,10 @@ namespace CustomSortedList.Test
             Assert.Empty(numbers);
             Assert.Equal(expectedExceptionMessage, exception.Message);
         }
+
+        #endregion
+
+        #region ContainsKey method
 
         [Fact]
         public void ContainsKey_NotNullExistingKey_ReturnsTrue()
@@ -692,6 +717,10 @@ namespace CustomSortedList.Test
             Assert.NotNull(exception);
             Assert.Equal(expectedExceptionMessage, exception.ParamName);
         }
+
+        #endregion
+
+        #region ContainsValue method
 
         [Fact]
         public void ContainsValue_ExistingComparableValue_ReturnsTrue()
@@ -772,6 +801,10 @@ namespace CustomSortedList.Test
             Assert.True(containsNull);
         }
 
+        #endregion
+
+        #region Test Enumerator (GetEnumerator)
+
         [Fact]
         public void GetEnumerator_SortedList_ReturnsCorrectEnumeratorObject()
         {
@@ -799,6 +832,10 @@ namespace CustomSortedList.Test
             Assert.Equal(numbersExpected, numbersActual);
             Assert.Equal(numbersExpected, numbersActualForEach);
         }
+
+        #endregion
+
+        #region IndexOfKey method
 
         [Fact]
         public void IndexOfKey_NotNullExistingKey_ReturnsIndex()
@@ -859,6 +896,10 @@ namespace CustomSortedList.Test
             //assert
             Assert.Equal(-1, indexOfKeyFour);
         }
+
+        #endregion
+
+        #region IndexOfValue method
 
         [Fact]
         public void IndexOfValue_NotNullExistingComparableValue_ReturnsIndex()
@@ -945,6 +986,10 @@ namespace CustomSortedList.Test
             Assert.Equal(-1, indexOfValueNull);
         }
 
+        #endregion
+
+        #region GetKey method
+
         [Fact]
         public void GetKey_ValidIndex_ReturnsKey()
         {
@@ -990,6 +1035,9 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception2.ParamName);
         }
 
+        #endregion
+
+        #region GetByIndex method
 
         [Fact]
         public void GetByIndex_ValidIndex_ReturnsValue()
@@ -1035,6 +1083,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception1.ParamName);
             Assert.Equal(expectedExceptionMessage, exception2.ParamName);
         }
+
+        #endregion
+
+        #region SetByIndex method
 
         [Fact]
         public void SetByIndex_ValidIndex_SetCorrectValueByIndex()
@@ -1082,6 +1134,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception1.ParamName);
             Assert.Equal(expectedExceptionMessage, exception2.ParamName);
         }
+
+        #endregion
+
+        #region Remove method 
 
         [Fact]
         public void Remove_NonNullExistingKey_ReturnsTrue()
@@ -1150,6 +1206,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception.ParamName);
         }
 
+        #endregion
+
+        #region RemoveAt method
+
         [Fact]
         public void RemoveAt_ValidIndex_RemoveItems()
         {
@@ -1196,6 +1256,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception2.ParamName);
         }
 
+        #endregion
+
+        #region IsEmpty method
+
         [Fact]
         public void IsEmpty_EmptyAndNonEmptySL_ReturnsBool()
         {
@@ -1221,6 +1285,10 @@ namespace CustomSortedList.Test
             Assert.True(isEmptyAfterClear);
         }
 
+        #endregion
+
+        #region Clone method
+
         [Fact]
         public void Clone_MySortedList_ReturnsEqualList()
         {
@@ -1241,6 +1309,10 @@ namespace CustomSortedList.Test
             Assert.Equal(numbers, numbersClone);
             Assert.NotEqual(numbersHash, numbersCloneHash);
         }
+
+        #endregion
+
+        #region TrimExcess method
 
         [Fact]
         public void TrimExcess_CountDivideCapacityLessThan90Percent()
@@ -1301,6 +1373,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedCapacityBeforeTrim, capacityBeforeTrim);
             Assert.Equal(expectedCapacityAfterTrim, capacityAfterTrim);
         }
+
+        #endregion
+
+        #region TryGetValue method
 
         [Fact]
         public void TryGetValue_NonNullExistingKey_ReturnsTrue()
@@ -1369,6 +1445,10 @@ namespace CustomSortedList.Test
             Assert.Equal(expectedExceptionMessage, exception.ParamName);
         }
 
+        #endregion
+
+        #region ToString method
+
         [Fact]
         public void ToString_TestValidString()
         {
@@ -1387,5 +1467,7 @@ namespace CustomSortedList.Test
             //assert
             Assert.Equal(expectedString, actualString);
         }
+
+        #endregion
     }
 }
